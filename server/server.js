@@ -14,7 +14,8 @@ const app = express()
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://image-generator-ai-client-6gp4-mmqh2m8ci.vercel.app'
+  'https://image-generator-ai-client-6gp4-mmqh2m8ci.vercel.app',
+  'https://image-generator-ai-client-mtws.vercel.app'
 ]
 
 // Add FRONTEND_URL from environment if exists
