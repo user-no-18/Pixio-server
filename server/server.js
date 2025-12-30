@@ -23,13 +23,14 @@ if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL)
 }
 
-app.use(cors({
+// CORS configuration
+const corsOptions = {
   origin: function(origin, callback) {
     // Allow requests with no origin (mobile apps, curl, postman)
     if (!origin) return callback(null, true)
     
     // Check if origin is in allowed list
-    if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
       console.log('Blocked origin:', origin)
@@ -41,8 +42,15 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'token']
-}))
+  allowedHeaders: ['Content-Type', 'Authorization', 'token'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}
+
+app.use(cors(corsOptions))
+
+// ✅ Handle preflight requests for all routes
+app.options('*', cors(corsOptions))
 
 // Body parser middleware
 app.use(express.json())
