@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+  default: null
   },
   creditBalance: {
     type: Number,
