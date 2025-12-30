@@ -5,13 +5,19 @@ import { fileURLToPath } from "url";
 
 // Get service account based on environment
 const getServiceAccount = () => {
+  // Check if we're on Vercel (environment variable exists)
   if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    // Vercel: Decode Base64 environment variable
-    const decodedKey = Buffer.from(
-      process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 
-      'base64'
-    ).toString('utf-8');
-    return JSON.parse(decodedKey);
+    try {
+      // Vercel: Decode Base64 environment variable
+      const decodedKey = Buffer.from(
+        process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
+        'base64'
+      ).toString('utf-8');
+      return JSON.parse(decodedKey);
+    } catch (error) {
+      console.error("Error parsing Firebase service account from env:", error);
+      throw error;
+    }
   } else {
     // Local: Read from file
     const __filename = fileURLToPath(import.meta.url);
