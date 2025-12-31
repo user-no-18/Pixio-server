@@ -6,8 +6,8 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import transactionModel from "../models/transactionModel.js"
 dotenv.config();
-// import validator from "validator";
-// import admin from "../config/firebase.js";
+import validator from "validator";
+import admin from "../config/firebase.js";
 
 const getTokenFromRequest = (req) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -348,71 +348,71 @@ const verifyRazorpay = async (req, res) => {
   }
 };
 
-//  const googleAuth = async (req, res) => {
-//   try {
-//     const { idToken } = req.body;
+ const googleAuth = async (req, res) => {
+  try {
+    const { idToken } = req.body;
 
     
-//     if (!idToken) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Google ID token is required",
-//       });
-//     }
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Google ID token is required",
+      });
+    }
 
    
-//     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
 
-//     const { email, name, uid } = decodedToken;
+    const { email, name, uid } = decodedToken;
 
-//     if (!email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email not found in Google account",
-//       });
-//     }
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email not found in Google account",
+      });
+    }
 
    
-//     let user = await userModel.findOne({ email });
+    let user = await userModel.findOne({ email });
 
     
-//     if (!user) {
-//       user = await userModel.create({
-//         name: name || "Google User",
-//         email,
-//         password: null,        
-//         creditBalance: 5,    
-//         authProvider: "google" 
-//       });
-//     }
+    if (!user) {
+      user = await userModel.create({
+        name: name || "Google User",
+        email,
+        password: null,        
+        creditBalance: 5,    
+        authProvider: "google" 
+      });
+    }
 
     
-//     const token = jwt.sign(
-//       { id: user._id },
-//       process.env.JWT_SECRET,
-//       { expiresIn: "7d" }
-//     );
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
 
-//     return res.status(200).json({
-//       success: true,
-//       token,
-//       user: {
-//         id: user._id,
-//         name: user.name,
-//         email: user.email,
-//         creditBalance: user.creditBalance,
-//       },
-//     });
+    return res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        creditBalance: user.creditBalance,
+      },
+    });
 
-//   } catch (error) {
-//     console.error("Google Auth Error:", error.message);
-//     return res.status(401).json({
-//       success: false,
-//       message: "Google authentication failed",
-//     });
-//   }
-// };
+  } catch (error) {
+    console.error("Google Auth Error:", error.message);
+    return res.status(401).json({
+      success: false,
+      message: "Google authentication failed",
+    });
+  }
+};
 
 
 export {

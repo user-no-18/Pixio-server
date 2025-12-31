@@ -5,7 +5,7 @@ import {
   userCredits, 
   paymentRazorpay, 
   verifyRazorpay ,
-  // googleAuth,
+  googleAuth,
 } from '../controllers/userController.js';
 import userAuth from '../middlewares/auth.js';
 
@@ -14,8 +14,8 @@ const userRouter = express.Router();
 // Public routes
 userRouter.post('/register', registerUser);
 userRouter.post('/login', loginUser);
-// userRouter.post("/google-auth", googleAuth);
-// Protected routes (require authentication)
+userRouter.post("/google-auth", googleAuth);
+// Protected routes 
 userRouter.get('/credits', userAuth, userCredits);
 userRouter.post('/pay-razor', userAuth, paymentRazorpay);
 userRouter.post('/verify-razor', userAuth, verifyRazorpay);
