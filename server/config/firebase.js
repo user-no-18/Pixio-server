@@ -1,39 +1,47 @@
 import admin from "firebase-admin";
-// import fs from "fs";
-// import path from "path";
-// import { fileURLToPath } from "url";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// // Get service account based on environment
-// const getServiceAccount = () => {
-//   // Check if we're on Vercel (environment variable exists)
-//   if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-//     try {
-//       // Vercel: Decode Base64 environment variable
-//       const decodedKey = Buffer.from(
-//         process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
-//         'base64'
-//       ).toString('utf-8');
-//       return JSON.parse(decodedKey);
-//     } catch (error) {
-//       console.error("Error parsing Firebase service account from env:", error);
-//       throw error;
-//     }
-//   } else {
-//     // Local: Read from file
-//     const __filename = fileURLToPath(import.meta.url);
-//     const __dirname = path.dirname(__filename);
-//     const serviceAccountPath = path.join(__dirname, "firebaseServiceAccount.json");
-//     return JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
-//   }
-// };
-
-// if (!admin.apps.length) {
-//   const serviceAccount = getServiceAccount();
-  
-//   admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//   });
-// }
-console.log("Firebase temporarily disabled");
+if (!admin.apps.length) {
+  try {
+    // Check if we have individual environment variables (Vercel/Production)
+    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+      console.log("✅ Initializing Firebase with environment variables");
+      
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        }),
+      });
+      
+      console.log("✅ Firebase Admin initialized successfully");
+    } 
+    // Fallback to local JSON file (Local Development)
+    else {
+      console.log("📁 Using local Firebase service account file");
+      
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const serviceAccountPath = path.join(__dirname, "firebaseServiceAccount.json");
+      
+      if (fs.existsSync(serviceAccountPath)) {
+        const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+        
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+        });
+        
+        console.log("✅ Firebase Admin initialized from local file");
+      } else {
+        console.warn("⚠️ Firebase service account file not found. Google Auth will not work.");
+      }
+    }
+  } catch (error) {
+    console.error("❌ Error initializing Firebase:", error.message);
+  }
+}
 
 export default admin;
