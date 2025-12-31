@@ -8,6 +8,7 @@ import transactionModel from "../models/transactionModel.js"
 dotenv.config();
 import validator from "validator";
 import admin from "../config/firebase.js";
+import EmailOtp from "../models/EmailOtp.js";
 
 const getTokenFromRequest = (req) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -31,6 +32,9 @@ const verifyJwt = (token) => {
   }
 };
 
+
+
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -46,6 +50,29 @@ const registerUser = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Email already registered" });
     }
+
+    
+//new block 
+    
+    const otpRecord = await EmailOtp.findOne({ email });
+    
+    if (!otpRecord) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Please verify your email first" 
+      });
+    }
+    
+    if (!otpRecord.verified) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email not verified. Please complete OTP verification" 
+      });
+    }
+    
+    // Optional: Delete the OTP record after successful verification
+    await EmailOtp.deleteOne({ email });
+    /* ==================================================================================== */
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -67,6 +94,8 @@ const registerUser = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
 
 const loginUser = async (req, res) => {
   try {

@@ -6,6 +6,7 @@ dotenv.config()
 import connectDB from './config/db.js'
 import userRouter from './routes/userRouters.js'
 import imageRouter from './routes/imageRouts.js'
+import otpRouter from './routes/otpRoutes.js'
 
 const PORT = process.env.PORT || 4000
 const app = express()
@@ -50,6 +51,7 @@ await connectDB()
 // COMMENTED OUT TO TEST
 app.use('/api/user', userRouter)
 app.use('/api/image', imageRouter)
+app.use("/api/otp", otpRouter);
 
 app.get('/', (req, res) => {
   res.json({ 
