@@ -18,26 +18,19 @@ const allowedOrigins = [
   'https://image-generator-ai-client-mtws.vercel.app'
 ]
 
-// Add FRONTEND_URL from environment if exists
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL)
 }
 
-// CORS configuration
 const corsOptions = {
   origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, postman)
     if (!origin) return callback(null, true)
     
-    // Check if origin is in allowed list
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
       console.log('Blocked origin:', origin)
-      // For development: allow anyway
       callback(null, true)
-      // For production: uncomment below and comment above
-      // callback(new Error('Not allowed by CORS'))
     }
   },
   credentials: true,
@@ -48,31 +41,24 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
-// ✅ Handle preflight requests for all routes
 app.options('*', cors(corsOptions))
-
-// Body parser middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// Connect to database
 await connectDB()
 
-// Routes
+// COMMENTED OUT TO TEST
 app.use('/api/user', userRouter)
 app.use('/api/image', imageRouter)
 
-// Health check route
 app.get('/', (req, res) => {
   res.json({ 
     success: true, 
-    message: "API Working fine",
+    message: "API Working fine - Routes temporarily disabled",
     timestamp: new Date().toISOString()
   })
 })
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
     success: false, 
@@ -80,7 +66,6 @@ app.use((req, res) => {
   })
 })
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err)
   res.status(err.status || 500).json({ 

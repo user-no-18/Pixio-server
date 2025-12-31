@@ -35,4 +35,5 @@ import admin from "firebase-admin";
 //   });
 // }
 console.log("Firebase temporarily disabled");
+
 export default admin;
