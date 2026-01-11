@@ -7,6 +7,7 @@ import connectDB from './config/db.js'
 import userRouter from './routes/userRouters.js'
 import imageRouter from './routes/imageRouts.js'
 import otpRouter from './routes/otpRoutes.js'
+import dashboardRouter from './routes/dashboardRoutes.js'
 
 const PORT = process.env.PORT || 4000
 const app = express()
@@ -52,11 +53,13 @@ await connectDB()
 app.use('/api/user', userRouter)
 app.use('/api/image', imageRouter)
 app.use("/api/otp", otpRouter);
+app.use('/api/dashboard', dashboardRouter);
+
 
 app.get('/', (req, res) => {
   res.json({ 
     success: true, 
-    message: "API Working fine - Routes temporarily disabled",
+    message: "API Working fine ",
     timestamp: new Date().toISOString()
   })
 })
